@@ -35,7 +35,7 @@ public class ContainerInitialPlacementTest {
             /**
              * The output folder for the logs. The log files would be located in this folder.
              */
-            String outputFolder = "~/Results";
+            String outputFolder = "Results";
             /**
              * The allocation policy for VMs.
              */
