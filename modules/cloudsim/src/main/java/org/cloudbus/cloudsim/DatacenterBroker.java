@@ -80,11 +80,10 @@ public class DatacenterBroker extends SimEntity {
 	 * Created a new DatacenterBroker object.
 	 * 
 	 * @param name name to be associated with this entity (as required by {@link SimEntity} class)
-	 * @throws Exception the exception
 	 * @pre name != null
 	 * @post $none
 	 */
-	public DatacenterBroker(String name) throws Exception {
+	public DatacenterBroker(String name) {
 		super(name);
 
 		setGuestList(new ArrayList<>());

@@ -59,7 +59,7 @@ public class ContainerDatacenterBroker extends DatacenterBroker {
      * @pre name != null
      * @post $none
      */
-    public ContainerDatacenterBroker(String name, double overBookingfactor) throws Exception {
+    public ContainerDatacenterBroker(String name, double overBookingfactor) {
         super(name);
 
         setGuestList(new ArrayList<>());

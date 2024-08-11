@@ -141,16 +141,7 @@ public class HelperEx {
     // Broker
 
     public static ContainerDatacenterBroker createBroker(double overBookingFactor) {
-        ContainerDatacenterBroker broker = null;
-
-        try {
-            broker = new ContainerDatacenterBroker("Broker", overBookingFactor);
-        } catch (Exception var2) {
-            var2.printStackTrace();
-            System.exit(0);
-        }
-
-        return broker;
+        return new ContainerDatacenterBroker("Broker", overBookingFactor);
     }
 
     //    // Data Center
