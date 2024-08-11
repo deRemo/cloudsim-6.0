@@ -91,7 +91,7 @@ public class PowerContainerDatacenterCM extends PowerContainerDatacenter {
                             targetVm.addMigratingInGuest(container);
 
 
-                            if (migrate.NewEventRequired() != null) {
+                            if (migrate.NewEventRequired()) {
                                 if (!vmList.contains(targetVm)) {
                                     // A new VM is created  send a vm create request with delay :)
 //                                Send a request to create Vm after 100 second
@@ -236,18 +236,9 @@ public class PowerContainerDatacenterCM extends PowerContainerDatacenter {
 //                set the containerVm in waiting state
             containerVm.setInWaiting(true);
 //                containerVm.addMigratingInContainer((Container) map.get("container"));
-            ack = true;
-            if (ack) {
-                int datacenterID = getId();
-                int res;
-                if (result) {
-                    res = CloudSimTags.TRUE;
-                } else {
-                    res = CloudSimTags.FALSE;
-                }
-                GuestMapping data = new GuestMapping(containerVm, null, null, res, null, datacenterID, null);
-                send(2, CloudSim.getMinTimeBetweenEvents(), ContainerCloudSimTags.VM_NEW_CREATE, data);
-            }
+
+            GuestMapping data = new GuestMapping(containerVm, null, null, false, false);
+            send(2, CloudSim.getMinTimeBetweenEvents(), ContainerCloudSimTags.VM_NEW_CREATE, data);
 
             if (result) {
                 Log.println(String.format("%s VM ID #%d is created on Host #%d", CloudSim.clock(), containerVm.getId(), host.getId()));

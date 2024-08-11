@@ -184,12 +184,12 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
         for (GuestEntity container : containersToMigrate) {
             GuestMapping allocationMap = findHostForGuest(container, excludedHosts, false);
 
-            if (allocationMap.host() != null && allocationMap.vm() != null) {
+            if (allocationMap != null && allocationMap.host() != null && allocationMap.vm() != null) {
                 ContainerVm vm = (ContainerVm) allocationMap.vm();
                 Log.printlnConcat("Container #", container.getId(), " allocated to host #", (allocationMap.host()).getId(), "The VM ID is #", vm.getId());
-                migrationMap.add(new GuestMapping(vm, allocationMap.host(), (Container)container, 0, null, 0, null));
+                migrationMap.add(new GuestMapping(vm, allocationMap.host(), (Container)container, false, false));
             } else {
-                migrationMap.add(new GuestMapping(null, null, null, 0, null, 0, container));
+                migrationMap.add(new GuestMapping(null, null, null, false, true));
             }
         }
         containersToMigrate.clear();
@@ -214,9 +214,8 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
 
         List<Container> containerList = new ArrayList<>();
         for (GuestMapping map : migrationMap) {
-            if (map.NewVmRequired() != null) {
-                containerList.add((Container) map.NewVmRequired());
-
+            if (map.NewVmRequired()) {
+                containerList.add(map.container());
             } else {
                 newMigrationMap.add(map);
             }
@@ -266,11 +265,11 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
             // Sort the underUtilized host by the utilization, so that we first assign vms to the more utilized ones
             for (Container container : containerList) {
                 GuestMapping allocationMap = findAvailableHostForContainer(container, createdVmMap);
-                if (allocationMap.host() != null && allocationMap.vm() != null) {
+                if (allocationMap != null && allocationMap.host() != null && allocationMap.vm() != null) {
                     ContainerVm vm = (ContainerVm) allocationMap.vm();
                     Log.printlnConcat("Container #", container.getId(), " allocated to host #", (allocationMap.host()).getId(), "The VM ID is #", vm.getId());
                     // vm.setInWaiting(true);
-                    newMigrationMap.add(new GuestMapping(vm, allocationMap.host(), container, 0, container, 0, null));
+                    newMigrationMap.add(new GuestMapping(vm, allocationMap.host(), container, true, false));
                 }
             }
         }
@@ -340,7 +339,7 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
                         previouseVm.guestCreate(container);
                         assignedContainer.add(container);
 //                        previouseVm.setInWaiting(true);
-                        newMigrationMap.add(new GuestMapping(previouseVm, previouseHost, container, 0, container, 0, null));
+                        newMigrationMap.add(new GuestMapping(previouseVm, previouseHost, container, true, false));
                     } else {
                         previouseVm = createVMinHost(previouseHost, true);
                         if (previouseVm == null) {
@@ -352,7 +351,7 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
                         previouseVm.guestCreate(container);
                         assignedContainer.add(container);
 //                        previouseVm.setInWaiting(true);
-                        newMigrationMap.add(new GuestMapping(previouseVm, previouseHost, container, 0, container, 0, null));
+                        newMigrationMap.add(new GuestMapping(previouseVm, previouseHost, container, true, false));
                     }
                 }
 
@@ -364,7 +363,7 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
                         previouseVm.guestCreate(container);
                         assignedContainer.add(container);
 //                        previouseVm.setInWaiting(true);
-                        newMigrationMap.add(new GuestMapping(previouseVm, previouseHost, container, 0, container, 0, null));
+                        newMigrationMap.add(new GuestMapping(previouseVm, previouseHost, container, true, false));
                     } else {
                         previouseVm = createVMinHost(previouseHost, true);
                         if (previouseVm == null) {
@@ -376,7 +375,7 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
                         previouseVm.guestCreate(container);
                         assignedContainer.add(container);
 //                        previouseVm.setInWaiting(true);
-                        newMigrationMap.add(new GuestMapping(previouseVm, previouseHost, container, 0, container, 0, null));
+                        newMigrationMap.add(new GuestMapping(previouseVm, previouseHost, container, true, false));
                     }
                 }
 
@@ -526,8 +525,11 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
                 }
             }
         }
-        GuestMapping map = new GuestMapping(allocatedVm, allocatedHost);
-        return map;
+
+        if (allocatedVm == null || allocatedHost == null) {
+            return null;
+        }
+        return new GuestMapping(allocatedVm, allocatedHost);
     }
 
     protected boolean isVmOverUtilized(ContainerVm vm) {

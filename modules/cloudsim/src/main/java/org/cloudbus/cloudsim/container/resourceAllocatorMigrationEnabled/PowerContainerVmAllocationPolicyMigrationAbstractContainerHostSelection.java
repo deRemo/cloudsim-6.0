@@ -32,12 +32,12 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
         PowerHost allocatedHost = null;
         ContainerVm allocatedVm = null;
         if (excludedHosts.size() == getHostList().size()){
-            return new GuestMapping();
+            return null;
         }
         Set<HostEntity> excludedHost1 = new HashSet<>(excludedHosts);
         while (true) {
             if(getHostList().isEmpty()){
-                return new GuestMapping();
+                return null;
             }
             HostEntity host = getHostSelectionPolicy().select(getHostList(), container, excludedHost1);
             boolean findVm = false;
@@ -75,7 +75,7 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
                 excludedHost1.add(host);
                 if (getHostList().size() == excludedHost1.size()) {
                     excludedHost1.clear();
-                    return new GuestMapping();
+                    return null;
                 }
             }
         }
@@ -186,7 +186,7 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
         VmList.sortByCpuUtilization(containersToMigrate);
         for (GuestEntity container : containersToMigrate) {
             GuestMapping allocatedMap = findHostForGuest(container, excludedHosts, true);
-            if (allocatedMap.vm() != null && allocatedMap.host() != null) {
+            if (allocatedMap != null && allocatedMap.vm() != null && allocatedMap.host() != null) {
                 Log.printlnConcat("Container# ",container.getId(),"allocated to VM # ", (allocatedMap.vm()).getId()
                         , " on host# ", (allocatedMap.host()).getId());
                 migrationMap.add(allocatedMap);
@@ -258,7 +258,7 @@ public abstract class PowerContainerVmAllocationPolicyMigrationAbstractContainer
             }
             if (underUtilizedHostList.size() == excludedHost1.size()) {
                 excludedHost1.clear();
-                return new GuestMapping();
+                return null;
             }
         }
 

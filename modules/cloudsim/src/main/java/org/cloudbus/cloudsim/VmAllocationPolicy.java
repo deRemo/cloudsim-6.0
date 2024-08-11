@@ -35,20 +35,15 @@ public abstract class VmAllocationPolicy {
 		GuestEntity vm,
 		HostEntity host,
 		Container container,
-		int result,
-        Container NewEventRequired,
-		int datacenterID,
-        GuestEntity NewVmRequired)
+        boolean NewEventRequired,
+        boolean NewVmRequired)
 	{
 		public GuestMapping(GuestEntity vm, HostEntity host, Container container) {
-			this(vm, host, container, 0, null, host.getDatacenter().getId(), null);
+			this(vm, host, container, false, false);
 		}
 		public GuestMapping(GuestEntity vm, HostEntity host) {
 			this(vm, host, null);
 		}
-			public GuestMapping() {
-			this(null, null);
-        }
 	}
 
 	/** The host list. */
